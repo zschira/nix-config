@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ./laptop-hardware-configuration.nix
       ./zach-common.nix
       ./home-manager.nix
     ];
