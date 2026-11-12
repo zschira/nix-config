@@ -17,15 +17,17 @@ in
   };
   # home-manager.useGlobalPkgs = true;
   # home-manager.useUserPackages = true;
-  home-manager.users.zach = { pkgs, ... }: {
+  home-manager.users.zach = { pkgs, lib, config, ... }: {
     home.packages = [
     ];
+
     imports = [
       ./nvim.nix
       ./tmux.nix
       ./git.nix
       ./emulators.nix
     ];
+    programs.jq.enable = false;
     programs.fish = {
       enable = true;
       interactiveShellInit = ''
@@ -41,6 +43,16 @@ in
       shellIntegration.enableFishIntegration = true;
       settings = {
         shell = "fish";
+      };
+    };
+    programs.gpg = {
+      enable = true;
+      mutableKeys = true;
+      mutableTrust = true;
+      settings = {
+        use-agent = true;
+        keyid-format = "0xlong";
+        with-fingerprint = true;
       };
     };
     services.gpg-agent = {

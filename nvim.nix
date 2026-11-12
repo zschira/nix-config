@@ -139,14 +139,14 @@ layout_uv() {
               chat = {
                 adapter = {
                   name = "openrouter",
-                  model = "openai/gpt-5.4-mini",
+                  model = "anthropic/claude-opus-5",
                 },
               },
 
               inline = {
                 adapter = {
                   name = "openrouter",
-                  model = "openai/gpt-5.4-mini",
+                  model = "anthropic/claude-opus-5",
                 },
               },
             },
