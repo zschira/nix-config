@@ -17,6 +17,7 @@
     pkgs.neovim
     pkgs.thunderbird
     pkgs.kitty
+    pkgs.libqalculate
     pkgs.fishPlugins.done
     pkgs.fishPlugins.fzf-fish
     pkgs.fishPlugins.forgit
@@ -25,7 +26,6 @@
     pkgs.fishPlugins.grc
     pkgs.grc
     pkgs.tmux
-    pkgs.git
     pkgs.fd
     pkgs.ripgrep
     pkgs.gnumake
@@ -40,6 +40,9 @@
     pkgs.uv
     pkgs.duckdb
     pkgs.nodejs
+
+    # Printing
+    pkgs.brlaser
 
     # photo stuff
     pkgs.digikam
@@ -65,6 +68,11 @@
     ];
   };
   environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; }; # Optionally, set the environment variable
+  programs.git = {
+    enable = true;
+    lfs.enable = true;
+  };
+
   programs.ssh.startAgent = true;
   programs.nix-ld.enable = true;
   programs.kdeconnect.enable = true;
@@ -74,5 +82,12 @@
     # Create the default bridge network for podman
     defaultNetwork.settings.dns_enabled = true;
     dockerCompat = true;
+  };
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 }

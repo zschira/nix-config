@@ -18,10 +18,22 @@
       fsType = "ext4";
     };
 
+  fileSystems."/mnt/hdd" = {
+    device = "/dev/disk/by-uuid/50d217d3-5684-44ed-bca2-f823701a1dd7";
+    fsType = "ext4";
+    options = [ "defaults" ];
+  };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/E8BB-F7D0";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
+    };
+
+  fileSystems."/media" =
+    { device = "192.168.0.14:/media";
+      fsType = "nfs4";
+      options = [ "x-systemd.automount" "noauto" ];
     };
 
   swapDevices =

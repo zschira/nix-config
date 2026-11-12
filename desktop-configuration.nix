@@ -16,6 +16,17 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Set ownership for hdd mount
+  systemd.tmpfiles.rules = [
+    "d /mnt 0755 root root - -"
+    "d /mnt/hdd 0755 root root - -"
+    "d /mnt/hdd/catalyst 0755 zach users - -"
+    "d /mnt/hdd/projects 0755 zach users - -"
+    "d /mnt/hdd/games 0755 zach users - -"
+    "L /home/zach/catalyst - - - - /mnt/hdd/catalyst"
+    "L /home/zach/projects - - - - /mnt/hdd/projects"
+  ];
+
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -60,6 +71,12 @@
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [ pkgs.brlaser ];
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -72,6 +89,23 @@
     # If you want to use JACK applications, uncomment this
     # jack.enable = true;
   };
+
+  # Enable bluetooth
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
+  # Enable nvidia proprietary driver
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.graphics.enable = true;
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    open = false; # or true if your GPU supports it and you want to test it
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+  };
+
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;

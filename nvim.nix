@@ -139,14 +139,14 @@ layout_uv() {
               chat = {
                 adapter = {
                   name = "openrouter",
-                  model = "openai/gpt-5.4-mini",
+                  model = "anthropic/claude-sonnet-5",
                 },
               },
 
               inline = {
                 adapter = {
                   name = "openrouter",
-                  model = "openai/gpt-5.4-mini",
+                  model = "anthropic/claude-sonnet-5",
                 },
               },
             },
@@ -177,6 +177,28 @@ layout_uv() {
       }
 
       vim-fugitive
+
+      {
+        plugin = diffview-nvim;
+        type = "lua";
+        config = ''
+          require("diffview").setup({})
+
+          vim.keymap.set(
+            "n",
+            "<leader>gd",
+            "<cmd>DiffviewOpen main...HEAD<CR>",
+            { desc = "Diff current branch vs main" }
+          )
+
+          vim.keymap.set(
+            "n",
+            "<leader>gq",
+            "<cmd>DiffviewClose<CR>",
+            { desc = "Close diffview" }
+          )
+        '';
+      }
 
       (nvim-treesitter.withPlugins (p: with p; [
         python
