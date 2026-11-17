@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, ... }:
 
 {
   environment.systemPackages = [
@@ -36,7 +36,7 @@
     # Python tooling
     pkgs.ruff
     pkgs.pyright
-    pkgs.pixi
+    pkgs-unstable.pixi
     pkgs.uv
     pkgs.duckdb
     pkgs.nodejs

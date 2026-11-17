@@ -4,7 +4,14 @@
 
 { config, pkgs, ... }:
 
+let
+  pkgs-unstable = import <nixos-unstable> {
+    config = config.nixpkgs.config;
+  };
+in
 {
+  _module.args.pkgs-unstable = pkgs-unstable;
+
   imports =
     [ # Include the results of the hardware scan.
       ./zach-common.nix
