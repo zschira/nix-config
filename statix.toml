@@ -1,0 +1,3 @@
+# repeated_keys objects to the idiomatic NixOS style of one option per line
+# (services.foo.enable = ...; services.bar.enable = ...;).
+disabled = [ "repeated_keys" ]
