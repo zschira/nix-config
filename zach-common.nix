@@ -11,7 +11,6 @@
     pkgs.protonmail-bridge-gui
     pkgs.pass
     pkgs.gnupg
-    pkgs.pinentry-curses
     pkgs.wakeonlan
     pkgs.fish
     pkgs.neovim
@@ -73,7 +72,6 @@
     lfs.enable = true;
   };
 
-  programs.ssh.startAgent = true;
   programs.nix-ld.enable = true;
   programs.kdeconnect.enable = true;
 

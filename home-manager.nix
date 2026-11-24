@@ -58,7 +58,7 @@ in
     services.gpg-agent = {
       enable = true;
       enableSshSupport = true;
-      pinentry.package = pkgs.pinentry-curses;
+      pinentry.package = pkgs.pinentry-qt;
     };
     services.podman.settings.containers = {
       compose_warning_logs = false;
