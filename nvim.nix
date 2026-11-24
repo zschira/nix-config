@@ -1,4 +1,3 @@
-
 { config, pkgs, ... }:
 
 {
@@ -7,49 +6,49 @@
   # See: https://github.com/direnv/direnv/issues/1250
   home.file.".config/direnv/direnvrc" = {
     text = ''
-layout_uv() {
-  # Reload when project config or lockfile change. With --frozen, a pyproject.toml
-  # change triggers an immediate error (lockfile out of sync); a uv.lock change
-  # triggers a re-sync after the user has updated it manually.
-  watch_file .python-version pyproject.toml uv.lock
+      layout_uv() {
+        # Reload when project config or lockfile change. With --frozen, a pyproject.toml
+        # change triggers an immediate error (lockfile out of sync); a uv.lock change
+        # triggers a re-sync after the user has updated it manually.
+        watch_file .python-version pyproject.toml uv.lock
 
-  if ! has uv; then
-    log_error "uv: command not found. Install from https://docs.astral.sh/uv/"
-    return 1
-  fi
+        if ! has uv; then
+          log_error "uv: command not found. Install from https://docs.astral.sh/uv/"
+          return 1
+        fi
 
-  if [[ ! -f pyproject.toml ]]; then
-    log_error "uv: no pyproject.toml found. Run \`uv init\` to create a project."
-    return 1
-  fi
+        if [[ ! -f pyproject.toml ]]; then
+          log_error "uv: no pyproject.toml found. Run \`uv init\` to create a project."
+          return 1
+        fi
 
-  local venv_path
-  venv_path="$(expand_path "''${UV_PROJECT_ENVIRONMENT:-.venv}")"
-  export UV_PROJECT_ENVIRONMENT="$venv_path"
+        local venv_path
+        venv_path="$(expand_path "''${UV_PROJECT_ENVIRONMENT:-.venv}")"
+        export UV_PROJECT_ENVIRONMENT="$venv_path"
 
-  local python_arg=()
-  local sync_args=()
-  # uv python specifiers (versions, paths, implementations) never start with
-  # "--", so this distinguishes a python specifier from arguments intended for `uv sync`.
-  if [[ -n "''${1:-}" && "''${1:-}" != --* ]]; then
-    python_arg=(--python "$1")
-    sync_args=("''${@:2}")
-  else
-    sync_args=("$@")
-  fi
+        local python_arg=()
+        local sync_args=()
+        # uv python specifiers (versions, paths, implementations) never start with
+        # "--", so this distinguishes a python specifier from arguments intended for `uv sync`.
+        if [[ -n "''${1:-}" && "''${1:-}" != --* ]]; then
+          python_arg=(--python "$1")
+          sync_args=("''${@:2}")
+        else
+          sync_args=("$@")
+        fi
 
-  # must use --frozen: we don't want to modify the lock file
-  uv sync --frozen "''${python_arg[@]}" "''${sync_args[@]}"
+        # must use --frozen: we don't want to modify the lock file
+        uv sync --frozen "''${python_arg[@]}" "''${sync_args[@]}"
 
-  export VIRTUAL_ENV="$venv_path"
-  if [[ -d "$venv_path/bin" ]]; then
-    PATH_add "$venv_path/bin"
-  fi
-  if [[ -d "$venv_path/Scripts" ]]; then
-    PATH_add "$venv_path/Scripts"
-  fi
-}
-'';
+        export VIRTUAL_ENV="$venv_path"
+        if [[ -d "$venv_path/bin" ]]; then
+          PATH_add "$venv_path/bin"
+        fi
+        if [[ -d "$venv_path/Scripts" ]]; then
+          PATH_add "$venv_path/Scripts"
+        fi
+      }
+    '';
   };
 
   programs.neovim = {
@@ -59,262 +58,267 @@ layout_uv() {
     viAlias = true;
     vimAlias = true;
 
-    plugins = with pkgs.vimPlugins; let
-      codecompanion-nvim-pinned = pkgs.vimUtils.buildVimPlugin {
-        pname = "codecompanion-nvim";
-        version = "19.23.0";
+    plugins =
+      with pkgs.vimPlugins;
+      let
+        codecompanion-nvim-pinned = pkgs.vimUtils.buildVimPlugin {
+          pname = "codecompanion-nvim";
+          version = "19.23.0";
 
-        src = pkgs.fetchFromGitHub {
-          owner = "olimorris";
-          repo = "codecompanion.nvim";
+          src = pkgs.fetchFromGitHub {
+            owner = "olimorris";
+            repo = "codecompanion.nvim";
 
-          # Replace this with the latest release tag from:
-          # https://github.com/olimorris/codecompanion.nvim/releases
-          rev = "v19.23.0";
+            # Replace this with the latest release tag from:
+            # https://github.com/olimorris/codecompanion.nvim/releases
+            rev = "v19.23.0";
 
-          # First use:
-          # nix build
-          #
-          # Nix will tell you the correct hash to put here.
-          hash = "sha256-Qwp5GMiThljD7l9ygl8T333OlBQ2Me1k6/KWAkFq4QU=";
+            # First use:
+            # nix build
+            #
+            # Nix will tell you the correct hash to put here.
+            hash = "sha256-Qwp5GMiThljD7l9ygl8T333OlBQ2Me1k6/KWAkFq4QU=";
+          };
+
+          dependencies = [
+            plenary-nvim
+          ];
+          doCheck = false;
         };
+      in
+      [
 
-        dependencies = [
-          plenary-nvim
-        ];
-        doCheck = false;
-      };
-    in [
+        {
+          plugin = gruvbox;
+          type = "lua";
+          config = ''
+            vim.cmd.colorscheme("gruvbox")
+          '';
+        }
 
-      {
-        plugin = gruvbox;
-        type = "lua";
-        config = ''
-          vim.cmd.colorscheme("gruvbox")
-        '';
-      }
-
-      {
-        plugin = neo-tree-nvim;
-        type = "lua";
-        config = ''
-          require("neo-tree").setup({
-            filesystem = {
-              filtered_items = {
-                hide_dotfiles = false,
+        {
+          plugin = neo-tree-nvim;
+          type = "lua";
+          config = ''
+            require("neo-tree").setup({
+              filesystem = {
+                filtered_items = {
+                  hide_dotfiles = false,
+                },
               },
-            },
-          })
-        '';
-      }
+            })
+          '';
+        }
 
-      {
-        plugin = bufferline-nvim;
-        type = "lua";
-        config = ''
-          vim.opt.termguicolors = true
-          require("bufferline").setup{}
-        '';
-      }
+        {
+          plugin = bufferline-nvim;
+          type = "lua";
+          config = ''
+            vim.opt.termguicolors = true
+            require("bufferline").setup{}
+          '';
+        }
 
-      plenary-nvim
-      nui-nvim
-      {
-        plugin = codecompanion-nvim-pinned;
-        type = "lua";
-        config = ''
-          require("codecompanion").setup({
-            adapters = {
-              http = {
-                openrouter = function()
-                  return require("codecompanion.adapters").extend("openrouter", {
-                    schema = {
-                      preset = { default = "@preset/nvim-coding" },
-                    },
-                  })
-                end,
+        plenary-nvim
+        nui-nvim
+        {
+          plugin = codecompanion-nvim-pinned;
+          type = "lua";
+          config = ''
+            require("codecompanion").setup({
+              adapters = {
+                http = {
+                  openrouter = function()
+                    return require("codecompanion.adapters").extend("openrouter", {
+                      schema = {
+                        preset = { default = "@preset/nvim-coding" },
+                      },
+                    })
+                  end,
+                },
               },
-            },
-            interactions = {
-              chat = {
-                adapter = {
-                  name = "openrouter",
-                  model = "anthropic/claude-sonnet-5",
+              interactions = {
+                chat = {
+                  adapter = {
+                    name = "openrouter",
+                    model = "anthropic/claude-sonnet-5",
+                  },
+                },
+
+                inline = {
+                  adapter = {
+                    name = "openrouter",
+                    model = "anthropic/claude-sonnet-5",
+                  },
+                },
+              },
+            })
+          '';
+        }
+        nvim-surround
+
+        {
+          plugin = lualine-nvim;
+          type = "lua";
+          config = ''
+            require("lualine").setup({
+              options = {
+                theme = "gruvbox",
+                globalstatus = true,
+              },
+            })
+          '';
+        }
+
+        rainbow_csv
+
+        {
+          plugin = csvview-nvim;
+          type = "lua";
+          config = ''
+            require("csvview").setup()
+
+            vim.keymap.set(
+              "n",
+              "<leader>cv",
+              "<cmd>CsvViewToggle<CR>",
+              { desc = "Toggle CSV view" }
+            )
+          '';
+        }
+
+        {
+          plugin = lualine-nvim;
+          type = "lua";
+          config = ''
+            require("lualine").setup({
+              options = {
+                theme = "gruvbox",
+                globalstatus = true,
+              },
+            })
+          '';
+        }
+
+        {
+          plugin = gitsigns-nvim;
+          type = "lua";
+          config = ''
+            require("gitsigns").setup()
+          '';
+        }
+
+        vim-fugitive
+
+        {
+          plugin = diffview-nvim;
+          type = "lua";
+          config = ''
+            require("diffview").setup({})
+
+            vim.keymap.set(
+              "n",
+              "<leader>gd",
+              "<cmd>DiffviewOpen main...HEAD<CR>",
+              { desc = "Diff current branch vs main" }
+            )
+
+            vim.keymap.set(
+              "n",
+              "<leader>gq",
+              "<cmd>DiffviewClose<CR>",
+              { desc = "Close diffview" }
+            )
+          '';
+        }
+
+        (nvim-treesitter.withPlugins (
+          p: with p; [
+            python
+            lua
+            nix
+            bash
+            json
+            yaml
+            markdown
+          ]
+        ))
+
+        {
+          plugin = blink-cmp;
+          type = "lua";
+          config = ''
+            require("blink.cmp").setup({
+              keymap = {
+                preset = "cmdline",
+              },
+
+              completion = {
+                documentation = {
+                  auto_show = true,
                 },
               },
 
-              inline = {
-                adapter = {
-                  name = "openrouter",
-                  model = "anthropic/claude-sonnet-5",
+              signature = {
+                enabled = true,
+              },
+            });
+          '';
+        }
+
+        {
+          plugin = conform-nvim;
+          type = "lua";
+          config = ''
+            require("conform").setup({
+              formatters_by_ft = {
+                python = {
+                  "ruff_format",
+                  "ruff_organize_imports",
+                },
+                nix = {
+                  "nixfmt",
+                },
+                lua = {
+                  "stylua",
                 },
               },
-            },
-          })
-        '';
-      }
-      nvim-surround
 
-      {
-        plugin = lualine-nvim;
-        type = "lua";
-        config = ''
-          require("lualine").setup({
-            options = {
-              theme = "gruvbox",
-              globalstatus = true,
-            },
-          })
-        '';
-      }
-
-      rainbow_csv
-
-      {
-        plugin = csvview-nvim;
-        type = "lua";
-        config = ''
-          require("csvview").setup()
-
-          vim.keymap.set(
-            "n",
-            "<leader>cv",
-            "<cmd>CsvViewToggle<CR>",
-            { desc = "Toggle CSV view" }
-          )
-        '';
-      }
-
-      {
-        plugin = lualine-nvim;
-        type = "lua";
-        config = ''
-          require("lualine").setup({
-            options = {
-              theme = "gruvbox",
-              globalstatus = true,
-            },
-          })
-        '';
-      }
-
-      {
-        plugin = gitsigns-nvim;
-        type = "lua";
-        config = ''
-          require("gitsigns").setup()
-        '';
-      }
-
-      vim-fugitive
-
-      {
-        plugin = diffview-nvim;
-        type = "lua";
-        config = ''
-          require("diffview").setup({})
-
-          vim.keymap.set(
-            "n",
-            "<leader>gd",
-            "<cmd>DiffviewOpen main...HEAD<CR>",
-            { desc = "Diff current branch vs main" }
-          )
-
-          vim.keymap.set(
-            "n",
-            "<leader>gq",
-            "<cmd>DiffviewClose<CR>",
-            { desc = "Close diffview" }
-          )
-        '';
-      }
-
-      (nvim-treesitter.withPlugins (p: with p; [
-        python
-        lua
-        nix
-        bash
-        json
-        yaml
-        markdown
-      ]))
-
-      {
-        plugin = blink-cmp;
-        type = "lua";
-        config = ''
-          require("blink.cmp").setup({
-            keymap = {
-              preset = "cmdline",
-            },
-
-            completion = {
-              documentation = {
-                auto_show = true,
-              },
-            },
-
-            signature = {
-              enabled = true,
-            },
-          });
-        '';
-      }
-
-      {
-        plugin = conform-nvim;
-        type = "lua";
-        config = ''
-          require("conform").setup({
-            formatters_by_ft = {
-              python = {
-                "ruff_format",
-                "ruff_organize_imports",
-              },
-              nix = {
-                "nixfmt",
-              },
-              lua = {
-                "stylua",
-              },
-            },
-
-            format_on_save = {
-              timeout_ms = 1000,
-              lsp_fallback = true,
-            },
-          })
-
-          vim.keymap.set(
-            { "n", "v" },
-            "<leader>f",
-            function()
-              require("conform").format({
-                async = true,
+              format_on_save = {
+                timeout_ms = 1000,
                 lsp_fallback = true,
-              })
-            end,
-            { desc = "Format buffer" }
-          )
-        '';
-      }
+              },
+            })
 
-      {
-        plugin = nvim-lspconfig;
-        type = "lua";
-        config = ''
-          local capabilities =
-            require("blink.cmp").get_lsp_capabilities()
+            vim.keymap.set(
+              { "n", "v" },
+              "<leader>f",
+              function()
+                require("conform").format({
+                  async = true,
+                  lsp_fallback = true,
+                })
+              end,
+              { desc = "Format buffer" }
+            )
+          '';
+        }
 
-          vim.lsp.config("pyright", {
-            capabilities = capabilities,
-          })
+        {
+          plugin = nvim-lspconfig;
+          type = "lua";
+          config = ''
+            local capabilities =
+              require("blink.cmp").get_lsp_capabilities()
 
-          vim.lsp.enable("pyright")
-        '';
-      }
-    ];
+            vim.lsp.config("pyright", {
+              capabilities = capabilities,
+            })
+
+            vim.lsp.enable("pyright")
+          '';
+        }
+      ];
 
     initLua = ''
       --------------------------------------------------

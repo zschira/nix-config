@@ -4,7 +4,7 @@
     enable = true;
     settings = {
       user = {
-        name  = "Zach Schira";
+        name = "Zach Schira";
         email = "zach.schira@proton.me";
       };
       init.defaultBranch = "main";

@@ -9,59 +9,66 @@
   };
   # home-manager.useGlobalPkgs = true;
   # home-manager.useUserPackages = true;
-  home-manager.users.zach = { pkgs, lib, config, ... }: {
-    home.packages = [
-    ];
+  home-manager.users.zach =
+    {
+      pkgs,
+      lib,
+      config,
+      ...
+    }:
+    {
+      home.packages = [
+      ];
 
-    imports = [
-      ./nvim.nix
-      ./tmux.nix
-      ./git.nix
-      ./emulators.nix
-    ];
-    programs.jq.enable = false;
-    programs.fish = {
-      enable = true;
-      interactiveShellInit = ''
-        set fish_greeting # Disable greeting
-	    if not set -q TMUX
-          tmux new-session -A -s main
-        end
-        alias wake-desktop="wakeonlan fc:34:97:a6:43:85"
-      '';
-    };
-    programs.kitty = {
-      enable = true;
-      shellIntegration.enableFishIntegration = true;
-      settings = {
-        shell = "fish";
+      imports = [
+        ./nvim.nix
+        ./tmux.nix
+        ./git.nix
+        ./emulators.nix
+      ];
+      programs.jq.enable = false;
+      programs.fish = {
+        enable = true;
+        interactiveShellInit = ''
+                  set fish_greeting # Disable greeting
+          	    if not set -q TMUX
+                    tmux new-session -A -s main
+                  end
+                  alias wake-desktop="wakeonlan fc:34:97:a6:43:85"
+        '';
       };
-    };
-    programs.gpg = {
-      enable = true;
-      mutableKeys = true;
-      mutableTrust = true;
-      settings = {
-        use-agent = true;
-        keyid-format = "0xlong";
-        with-fingerprint = true;
+      programs.kitty = {
+        enable = true;
+        shellIntegration.enableFishIntegration = true;
+        settings = {
+          shell = "fish";
+        };
       };
-    };
-    services.gpg-agent = {
-      enable = true;
-      enableSshSupport = true;
-      pinentry.package = pkgs.pinentry-qt;
-    };
-    services.podman.settings.containers = {
-      compose_warning_logs = false;
-    };
-    programs.direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
+      programs.gpg = {
+        enable = true;
+        mutableKeys = true;
+        mutableTrust = true;
+        settings = {
+          use-agent = true;
+          keyid-format = "0xlong";
+          with-fingerprint = true;
+        };
+      };
+      services.gpg-agent = {
+        enable = true;
+        enableSshSupport = true;
+        pinentry.package = pkgs.pinentry-qt;
+      };
+      services.podman.settings.containers = {
+        compose_warning_logs = false;
+      };
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
 
-    # The state version is required and should stay at the version you
-    # originally installed.
-    home.stateVersion = "26.05";
-  };
+      # The state version is required and should stay at the version you
+      # originally installed.
+      home.stateVersion = "26.05";
+    };
 }

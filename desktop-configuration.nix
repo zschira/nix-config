@@ -5,12 +5,12 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./zach-common.nix
-      ./home-manager.nix
-      ./desktop-hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./zach-common.nix
+    ./home-manager.nix
+    ./desktop-hardware-configuration.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -114,7 +114,6 @@
     package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
   };
 
-
   # Enable touchpad support (enabled default in most desktopManager).
   # services.libinput.enable = true;
 
@@ -122,11 +121,14 @@
   users.users."zach" = {
     isNormalUser = true;
     description = "Zach";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     packages = with pkgs; [
       git
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
   };
 

@@ -1,4 +1,9 @@
-{ config, pkgs, pkgs-unstable, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 
 {
   environment.systemPackages = [
@@ -58,7 +63,10 @@
   };
 
   # Use flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   hardware.graphics = {
     enable = true;
@@ -66,7 +74,9 @@
       intel-media-driver # For Broadwell (2014) or newer processors. LIBVA_DRIVER_NAME=iHD
     ];
   };
-  environment.sessionVariables = { LIBVA_DRIVER_NAME = "iHD"; }; # Optionally, set the environment variable
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
+  }; # Optionally, set the environment variable
   programs.git = {
     enable = true;
     lfs.enable = true;
