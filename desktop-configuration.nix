@@ -4,14 +4,7 @@
 
 { config, pkgs, ... }:
 
-let
-  pkgs-unstable = import <nixos-unstable> {
-    config = config.nixpkgs.config;
-  };
-in
 {
-  _module.args.pkgs-unstable = pkgs-unstable;
-
   imports =
     [ # Include the results of the hardware scan.
       ./zach-common.nix
@@ -34,7 +27,7 @@ in
     "L /home/zach/projects - - - - /mnt/hdd/projects"
   ];
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "zach-desktop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
