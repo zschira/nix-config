@@ -168,6 +168,36 @@ layout_uv() {
         '';
       }
 
+      rainbow_csv
+
+      {
+        plugin = csvview-nvim;
+        type = "lua";
+        config = ''
+          require("csvview").setup()
+
+          vim.keymap.set(
+            "n",
+            "<leader>cv",
+            "<cmd>CsvViewToggle<CR>",
+            { desc = "Toggle CSV view" }
+          )
+        '';
+      }
+
+      {
+        plugin = lualine-nvim;
+        type = "lua";
+        config = ''
+          require("lualine").setup({
+            options = {
+              theme = "gruvbox",
+              globalstatus = true,
+            },
+          })
+        '';
+      }
+
       {
         plugin = gitsigns-nvim;
         type = "lua";
