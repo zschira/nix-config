@@ -14,6 +14,7 @@
     pkgs.zathura
     pkgs.signal-desktop
     pkgs.protonmail-bridge-gui
+    pkgs.proton-vpn
     pkgs.pass
     pkgs.gnupg
     pkgs.wakeonlan
